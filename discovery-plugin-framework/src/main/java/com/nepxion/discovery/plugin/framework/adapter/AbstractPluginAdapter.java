@@ -19,6 +19,7 @@ import org.springframework.cloud.client.serviceregistry.Registration;
 
 import com.nepxion.discovery.common.constant.DiscoveryConstant;
 import com.nepxion.discovery.common.entity.RuleEntity;
+import com.nepxion.discovery.common.exception.DiscoveryException;
 import com.nepxion.discovery.plugin.framework.cache.PluginCache;
 import com.nepxion.discovery.plugin.framework.cache.RuleCache;
 import com.netflix.loadbalancer.Server;
@@ -36,7 +37,7 @@ public abstract class AbstractPluginAdapter implements PluginAdapter {
     @Value("${" + DiscoveryConstant.SPRING_APPLICATION_GROUP_KEY + ":" + DiscoveryConstant.GROUP + "}")
     private String groupKey;
 
-    @Value("${" + DiscoveryConstant.SPRING_APPLICATION_TYPE + "}")
+    @Value("${" + DiscoveryConstant.SPRING_APPLICATION_TYPE + ":" + DiscoveryConstant.UNKNOWN + "}")
     private String applicationType;
 
     @Override
@@ -201,7 +202,16 @@ public abstract class AbstractPluginAdapter implements PluginAdapter {
 
     @Override
     public String getServerServiceId(Server server) {
-        return getServerMetadata(server).get(DiscoveryConstant.SPRING_APPLICATION_NAME).toLowerCase();
+        String serviceId = getServerMetadata(server).get(DiscoveryConstant.SPRING_APPLICATION_NAME);
+        if (StringUtils.isEmpty(serviceId)) {
+            serviceId = server.getMetaInfo().getAppName();
+        }
+
+        if (StringUtils.isEmpty(serviceId)) {
+            throw new DiscoveryException("Server ServiceId is null");
+        }
+
+        return serviceId.toLowerCase();
     }
 
     @Override
@@ -290,5 +300,30 @@ public abstract class AbstractPluginAdapter implements PluginAdapter {
     @Override
     public String getInstanceContextPath(ServiceInstance serviceInstance) {
         return getInstanceMetadata(serviceInstance).get(DiscoveryConstant.SPRING_APPLICATION_CONTEXT_PATH);
+    }
+
+    @Override
+    public String getPluginInfo(String previousPluginInfo) {
+        String serviceId = getServiceId();
+        String host = getHost();
+        int port = getPort();
+        String version = getVersion();
+        String region = getRegion();
+        String group = getGroup();
+
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(previousPluginInfo + " -> " + serviceId);
+        stringBuilder.append("[" + host + ":" + port + "]");
+        if (StringUtils.isNotEmpty(version)) {
+            stringBuilder.append("[V=" + version + "]");
+        }
+        if (StringUtils.isNotEmpty(region)) {
+            stringBuilder.append("[R=" + region + "]");
+        }
+        if (StringUtils.isNotEmpty(region)) {
+            stringBuilder.append("[G=" + group + "]");
+        }
+
+        return stringBuilder.toString();
     }
 }

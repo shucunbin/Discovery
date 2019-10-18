@@ -42,9 +42,12 @@ public abstract class AbstractStrategyInterceptor {
 
     protected List<String> requestHeaderList = new ArrayList<String>();
 
-    public AbstractStrategyInterceptor(String requestHeaders) {
-        if (StringUtils.isNotEmpty(requestHeaders)) {
-            requestHeaderList.addAll(StringUtil.splitToList(requestHeaders.toLowerCase(), DiscoveryConstant.SEPARATE));
+    public AbstractStrategyInterceptor(String contextRequestHeaders, String businessRequestHeaders) {
+        if (StringUtils.isNotEmpty(contextRequestHeaders)) {
+            requestHeaderList.addAll(StringUtil.splitToList(contextRequestHeaders.toLowerCase(), DiscoveryConstant.SEPARATE));
+        }
+        if (StringUtils.isNotEmpty(businessRequestHeaders)) {
+            requestHeaderList.addAll(StringUtil.splitToList(businessRequestHeaders.toLowerCase(), DiscoveryConstant.SEPARATE));
         }
         /*if (!requestHeaderList.contains(DiscoveryConstant.N_D_VERSION)) {
             requestHeaderList.add(DiscoveryConstant.N_D_VERSION);
@@ -98,10 +101,10 @@ public abstract class AbstractStrategyInterceptor {
 
     protected boolean isHeaderContainsExcludeInner(String headerName) {
         return isHeaderContains(headerName) &&
+                !StringUtils.equals(headerName, DiscoveryConstant.N_D_SERVICE_GROUP) &&
                 !StringUtils.equals(headerName, DiscoveryConstant.N_D_SERVICE_TYPE) &&
                 !StringUtils.equals(headerName, DiscoveryConstant.N_D_SERVICE_ID) &&
                 !StringUtils.equals(headerName, DiscoveryConstant.N_D_SERVICE_ADDRESS) &&
-                !StringUtils.equals(headerName, DiscoveryConstant.N_D_SERVICE_GROUP) &&
                 !StringUtils.equals(headerName, DiscoveryConstant.N_D_SERVICE_VERSION) &&
                 !StringUtils.equals(headerName, DiscoveryConstant.N_D_SERVICE_REGION);
         // return isHeaderContains(headerName) && !headerName.startsWith(DiscoveryConstant.N_D_SERVICE_PREFIX);

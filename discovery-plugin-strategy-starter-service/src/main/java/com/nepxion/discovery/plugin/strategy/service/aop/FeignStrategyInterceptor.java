@@ -24,11 +24,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.nepxion.discovery.common.constant.DiscoveryConstant;
+import com.nepxion.discovery.plugin.strategy.constant.StrategyConstant;
 import com.nepxion.discovery.plugin.strategy.service.adapter.FeignStrategyInterceptorAdapter;
-import com.nepxion.discovery.plugin.strategy.service.route.ServiceStrategyRouteFilter;
+import com.nepxion.discovery.plugin.strategy.service.filter.ServiceStrategyRouteFilter;
 
 public class FeignStrategyInterceptor extends AbstractStrategyInterceptor implements RequestInterceptor {
     private static final Logger LOG = LoggerFactory.getLogger(FeignStrategyInterceptor.class);
@@ -39,8 +41,11 @@ public class FeignStrategyInterceptor extends AbstractStrategyInterceptor implem
     @Autowired
     private ServiceStrategyRouteFilter serviceStrategyRouteFilter;
 
-    public FeignStrategyInterceptor(String requestHeaders) {
-        super(requestHeaders);
+    @Value("${" + StrategyConstant.SPRING_APPLICATION_STRATEGY_TRACE_ENABLED + ":false}")
+    protected Boolean strategyTraceEnabled;
+
+    public FeignStrategyInterceptor(String contextRequestHeaders, String businessRequestHeaders) {
+        super(contextRequestHeaders, businessRequestHeaders);
 
         LOG.info("----------- Feign Intercept Information ----------");
         LOG.info("Feign desires to intercept customer headers are {}", requestHeaderList);
@@ -54,22 +59,24 @@ public class FeignStrategyInterceptor extends AbstractStrategyInterceptor implem
         applyInnerHeader(requestTemplate);
         applyOuterHeader(requestTemplate);
 
-        interceptOutputHeader(requestTemplate);
-
         if (CollectionUtils.isNotEmpty(feignStrategyInterceptorAdapterList)) {
             for (FeignStrategyInterceptorAdapter feignStrategyInterceptorAdapter : feignStrategyInterceptorAdapterList) {
                 feignStrategyInterceptorAdapter.apply(requestTemplate);
             }
         }
+
+        interceptOutputHeader(requestTemplate);
     }
 
     private void applyInnerHeader(RequestTemplate requestTemplate) {
-        requestTemplate.header(DiscoveryConstant.N_D_SERVICE_TYPE, pluginAdapter.getServiceType());
-        requestTemplate.header(DiscoveryConstant.N_D_SERVICE_ID, pluginAdapter.getServiceId());
-        requestTemplate.header(DiscoveryConstant.N_D_SERVICE_ADDRESS, pluginAdapter.getHost() + ":" + pluginAdapter.getPort());
         requestTemplate.header(DiscoveryConstant.N_D_SERVICE_GROUP, pluginAdapter.getGroup());
-        requestTemplate.header(DiscoveryConstant.N_D_SERVICE_VERSION, pluginAdapter.getVersion());
-        requestTemplate.header(DiscoveryConstant.N_D_SERVICE_REGION, pluginAdapter.getRegion());
+        if (strategyTraceEnabled) {
+            requestTemplate.header(DiscoveryConstant.N_D_SERVICE_TYPE, pluginAdapter.getServiceType());
+            requestTemplate.header(DiscoveryConstant.N_D_SERVICE_ID, pluginAdapter.getServiceId());
+            requestTemplate.header(DiscoveryConstant.N_D_SERVICE_ADDRESS, pluginAdapter.getHost() + ":" + pluginAdapter.getPort());
+            requestTemplate.header(DiscoveryConstant.N_D_SERVICE_VERSION, pluginAdapter.getVersion());
+            requestTemplate.header(DiscoveryConstant.N_D_SERVICE_REGION, pluginAdapter.getRegion());
+        }
     }
 
     private void applyOuterHeader(RequestTemplate requestTemplate) {

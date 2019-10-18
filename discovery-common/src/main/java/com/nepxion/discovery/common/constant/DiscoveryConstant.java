@@ -10,7 +10,7 @@ package com.nepxion.discovery.common.constant;
  */
 
 public class DiscoveryConstant {
-    public static final String DISCOVERY_VERSION = "5.2.8";
+    public static final String DISCOVERY_VERSION = "5.4.1";
 
     public static final String SPRING_APPLICATION_DISCOVERY_PLUGIN = "spring.application.discovery.plugin";
     public static final String SPRING_APPLICATION_DISCOVERY_VERSION = "spring.application.discovery.version";
@@ -23,7 +23,12 @@ public class DiscoveryConstant {
     public static final String SPRING_APPLICATION_CONFIG_PATH = "spring.application.config.path";
     public static final String SPRING_APPLICATION_GROUP_KEY = "spring.application.group.key";
     public static final String SPRING_APPLICATION_CONTEXT_PATH = "spring.application.context-path";
-    public static final String SPRING_APPLICATION_NO_SERVER_FOUND_NOTIFICATION_ENABLED = "spring.application.no.server.found.notification.enabled";
+    public static final String SPRING_APPLICATION_DEFAULT_PROPERTIES_PATH = "spring.application.default.properties.path";
+    public static final String SPRING_APPLICATION_DEFAULT_PROPERTIES_PATH_VALUE = "spring-application-default.properties";
+    public static final String SPRING_APPLICATION_NO_SERVERS_RETRY_ENABLED = "spring.application.no.servers.retry.enabled";
+    public static final String SPRING_APPLICATION_NO_SERVERS_RETRY_TIMES = "spring.application.no.servers.retry.times";
+    public static final String SPRING_APPLICATION_NO_SERVERS_RETRY_AWAIT_TIME = "spring.application.no.servers.retry.await.time";
+    public static final String SPRING_APPLICATION_NO_SERVERS_NOTIFY_ENABLED = "spring.application.no.servers.notify.enabled";
 
     public static final String CONTEXT_PATH = "server.servlet.context-path";
 
@@ -56,10 +61,10 @@ public class DiscoveryConstant {
     public static final String N_D_PREFIX = "n-d-";
     public static final String N_D_SERVICE_PREFIX = "n-d-service";
 
+    public static final String N_D_SERVICE_GROUP = "n-d-service-group";
     public static final String N_D_SERVICE_TYPE = "n-d-service-type";
     public static final String N_D_SERVICE_ID = "n-d-service-id";
     public static final String N_D_SERVICE_ADDRESS = "n-d-service-address";
-    public static final String N_D_SERVICE_GROUP = "n-d-service-group";
     public static final String N_D_SERVICE_VERSION = "n-d-service-version";
     public static final String N_D_SERVICE_REGION = "n-d-service-region";
 
@@ -76,6 +81,8 @@ public class DiscoveryConstant {
 
     public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
     public static final String ENCODING_UTF_8 = "UTF-8";
+    public static final String ENCODING_GBK = "GBK";
+    public static final String ENCODING_ISO_8859_1 = "ISO-8859-1";
     public static final String SEPARATE = ";";
     public static final String EQUALS = "=";
     public static final String DASH = "-";
@@ -88,5 +95,9 @@ public class DiscoveryConstant {
     public static final String NO = "NO";
     public static final String DEFAULT = "default";
     public static final String UNKNOWN = "unknown";
-    public static final String EXT = "ext";
+
+    public static final String DEFAULT_XML_RULE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+            "<rule>\r\n" +
+            "</rule>";
+    public static final String DEFAULT_JSON_RULE = "{}";
 }

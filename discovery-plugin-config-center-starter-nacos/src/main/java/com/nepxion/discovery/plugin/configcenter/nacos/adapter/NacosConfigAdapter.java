@@ -51,27 +51,28 @@ public class NacosConfigAdapter extends ConfigAdapter {
     public String getConfig() throws Exception {
         String config = getConfig(false);
         if (StringUtils.isNotEmpty(config)) {
+            LOG.info("Found {} config from {} server", getConfigScope(false), getConfigType());
+
             return config;
         } else {
-            LOG.info("No {} config is retrieved from {} server", getConfigScope(false), getConfigType());
+            LOG.info("No {} config is found from {} server", getConfigScope(false), getConfigType());
         }
 
         config = getConfig(true);
         if (StringUtils.isNotEmpty(config)) {
+            LOG.info("Found {} config from {} server", getConfigScope(true), getConfigType());
+
             return config;
         } else {
-            LOG.info("No {} config is retrieved from {} server", getConfigScope(true), getConfigType());
+            LOG.info("No {} config is found from {} server", getConfigScope(true), getConfigType());
         }
 
         return null;
     }
 
     private String getConfig(boolean globalConfig) throws Exception {
-        String groupKey = pluginAdapter.getGroupKey();
         String group = pluginAdapter.getGroup();
         String serviceId = pluginAdapter.getServiceId();
-
-        LOG.info("Get {} config from {} server, {}={}, serviceId={}", getConfigScope(globalConfig), getConfigType(), groupKey, group, serviceId);
 
         return nacosOperation.getConfig(group, globalConfig ? group : serviceId);
     }
@@ -104,7 +105,7 @@ public class NacosConfigAdapter extends ConfigAdapter {
                         if (!StringUtils.equals(rule, config)) {
                             fireRuleUpdated(new RuleUpdatedEvent(config), true);
                         } else {
-                            LOG.info("Retrieved {} config from {} server is same as current config, ignore to update, {}={}, serviceId={}", getConfigScope(globalConfig), getConfigType(), groupKey, group, serviceId);
+                            LOG.info("Updated {} config from {} server is same as current config, ignore to update, {}={}, serviceId={}", getConfigScope(globalConfig), getConfigType(), groupKey, group, serviceId);
                         }
                     } else {
                         LOG.info("Get {} config cleared event from {} server, {}={}, serviceId={}", getConfigScope(globalConfig), getConfigType(), groupKey, group, serviceId);
@@ -148,6 +149,6 @@ public class NacosConfigAdapter extends ConfigAdapter {
 
     @Override
     public String getConfigType() {
-        return NacosConstant.TYPE;
+        return NacosConstant.NACOS_TYPE;
     }
 }
